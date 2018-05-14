@@ -1,4 +1,4 @@
-# Netscan v1.1
+# Netscan v1.2
 ## Author: github.com/thelinuxchoice
 ## IG: instagram.com/thelinuxchoice
 ### Don't copy this code without give me the credits, bitch! 
