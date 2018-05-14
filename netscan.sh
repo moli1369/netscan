@@ -11,7 +11,7 @@ if [[ -n "$threads" ]]; then
 printf "\n"
 printf "\e[1;91m [*] Waiting threads..\n\e[0m"
 wait $pid > /dev/null 2>&1 ;
-sleep 3
+sleep 6
 if [[ -e logip ]]; then
 
 countip=$(wc -l logip | cut -d " " -f1)
@@ -41,15 +41,23 @@ fi
 else
 exit 1
 fi
-
 }
+checktor() {
+
+check_tor=$(curl --socks5-hostname localhost:9050 -s https://www.google.com > /dev/null; echo $?)
+if [[ "check_tor" -gt 0 ]]; then
+printf "\e[1;91mCheck your Tor connection!\n"
+exit 1 
+fi
+}
+
 banner() {
 
 printf "\e[1;92m  _   _      _   ____                   \e[0m\n"
 printf "\e[1;92m | \ | | ___| |_/ ___|  ___ __ _ _ __   \e[0m\n"
 printf "\e[1;92m |  \| |/ _ \ __\___ \ / __/ _\` | '_ \  \e[0m\n"
 printf "\e[1;92m | |\  |  __/ |_ ___) | (_| (_| | | | | \e[0m\n"
-printf "\e[1;92m |_| \_|\___|\__|____/ \___\__,_|_| |_| \e[0m\e[1;77mv1.1\e[0m\n"
+printf "\e[1;92m |_| \_|\___|\__|____/ \___\__,_|_| |_| \e[0m\e[1;77mv1.2\e[0m\n"
 printf "\n"
 printf "\e[1;100m  Author: thelinuxchoice (Github/Instagram) \e[0m\n\n"
 
@@ -68,6 +76,7 @@ command -v nc > /dev/null 2>&1 || { echo >&2 "I require NetCat. Run: apt-get ins
 scan() {
 banner
 dependencies
+checktor
 read -p $'\e[1;37m[::] Put range ip part 1/4 \e[0m\e[91m(e.g.:192 255)  \e[0m\e[1;92m -> \e[0m' r1
 read -p $'\e[1;37m[::] Put range ip part 2/4 \e[0m\e[91m(e.g: 168 255)  \e[0m\e[1;92m -> \e[0m' r2
 read -p $'\e[1;37m[::] Put range ip part 3/4 \e[0m\e[91m(e.g.: 1 255)   \e[0m\e[1;92m -> \e[0m' r3
@@ -100,7 +109,7 @@ while [ $count -lt $count_target ]; do
 for target in $(sed -n ''$startline','$endline'p' targets-$session); do
 let count++
 printf "\e[1;93mScanning target:\e[0m\e[77m %s \e[0m\e[1;93m(\e[0m\e[77m%s\e[0m\e[1;93m/\e[0m\e[77m%s\e[0m\e[1;93m)\e[0m\n" $target $count $count_target
-{(trap ''SIGINT && check=$(proxychains nc $target $port -v -z -w5 > /dev/null 2>&1; echo $?); if [[ $check == "0" ]]; then echo $target >> logip; fi; ) } & done; pid=$! ; wait $!;
+{(trap '' SIGINT && check=$(proxychains nc $target $port -v -z -w5 > /dev/null 2>&1; echo $?); if [[ $check == "0" ]]; then echo $target >> logip; fi; ) } & done; pid=$! ; wait $!;
 let startline+=$threads
 let endline+=$threads
 
@@ -122,7 +131,7 @@ fi
 
 
 function scan_resume() {
-
+checktor
 count_target=$(wc -l sessions/$targets | cut -d " " -f1)
 printf "\e[1;92m[*] Targets:\e[0m\e[1;77m %s\e[0m\n" $count_target
 printf "\e[1;92m[*] Starting scanner...\e[0m\n"
@@ -137,7 +146,7 @@ count2=$((count+count21+1))
 printf "\e[1;93mScanning target:\e[0m\e[77m %s \e[0m\e[1;93m(\e[0m\e[77m%s\e[0m\e[1;93m/\e[0m\e[77m%s\e[0m\e[1;93m)\e[0m\n" $target $count2 $count_target
 let count++
 let count21++
-{(trap ''SIGINT && check=$(proxychains nc $target $port -v -z -w5 > /dev/null 2>&1; echo $?); if [[ $check == "0" ]]; then echo $target >> logip; fi; ) } & done; pid=$! ; wait $!;
+{(trap '' SIGINT && check=$(proxychains nc $target $port -v -z -w5 > /dev/null 2>&1; echo $?); if [[ $check == "0" ]]; then echo $target >> logip; fi; ) } & done; pid=$! ; wait $!;
 let startline+=$threads
 let endline+=$threads
 
