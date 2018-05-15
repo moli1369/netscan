@@ -1,7 +1,6 @@
 # Netscan v1.2
 ## Author: github.com/thelinuxchoice
 ## IG: instagram.com/thelinuxchoice
-### Don't copy this code without give me the credits, bitch! 
 
 Netscan is an shell script to perform Anonymous & Multi threaded port scan using netcat and proxychains 
 
